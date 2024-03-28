@@ -31,9 +31,10 @@ def ulogin():
     user  = datastore.find_user(email = email)
     if user :
         if check_hash(user.password,password):
-            response = make_response(jsonify({"authtoken": user.get_auth_token()}), 200)
+            response = make_response(jsonify({"username":user.username}), 200)
             response.headers['Access-Control-Allow-Origin'] = '*'
-            return response
+            print(user)
+            return response,200
         else:
             return jsonify({"error": "Invalid Password"}),400
     else:
