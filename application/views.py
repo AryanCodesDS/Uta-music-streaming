@@ -26,19 +26,23 @@ def usignup():
 @app.post('/user-login')
 def ulogin():
     data = request.json
+    username = data.get('username')
     email = data.get('email')
     password = data.get('password')
-    user  = datastore.find_user(email = email)
+    if username == None :
+        user = datastore.find_user(email = email)
+    elif email == None:
+        user = datastore.find_user(username = username)
     if user :
         if check_hash(user.password,password):
-            response = make_response(jsonify({"username":user.username}), 200)
+            response = make_response(jsonify({"authtoken": user.get_auth_token()}), 200)
             response.headers['Access-Control-Allow-Origin'] = '*'
             print(user)
             return response,200
         else:
             return jsonify({"error": "Invalid Password"}),400
     else:
-        return jsonify({"error": "User Not Found"}),400
+        return jsonify({"error": "User Not Found 1"},mimetype='application/json'),400
 
 @app.post('/admin-login')
 def adlogin():
