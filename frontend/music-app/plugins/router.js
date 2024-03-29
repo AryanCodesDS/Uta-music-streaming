@@ -25,7 +25,8 @@ const routes = [
     {
         path: '/user-login',
         name: 'userlogin',
-        component: userlogin
+        component: userlogin,
+        props:true
     },
     {
         path: '/admin-login',
@@ -45,7 +46,8 @@ const routes = [
     {
         path: '/all-songs',
         name: 'songs',
-        component: Songpage
+        component: Songpage,
+        props:true
     },
     {
         path: '/all-albums',
@@ -62,6 +64,7 @@ const routes = [
         name: 'moresongs',
         component: allsongs
     },
+
 
 ]
 

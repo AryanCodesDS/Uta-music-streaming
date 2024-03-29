@@ -1,10 +1,14 @@
 <script setup>
 import Navbar from './Navbar.vue'
+import { useStore } from 'vuex'
+const store = useStore()
+const username = store.state.username
+const roles = store.state.roles
 </script>
 
 <template>
   <div class="mb-3">
-    <Navbar />
+    <Navbar :roles="roles" :username = "username" />
   </div>
   <div class ="m-3">
     <h3>Most Liked</h3>
@@ -56,6 +60,7 @@ import Navbar from './Navbar.vue'
                 </div>
             </div>
         </div>
+
         <div class="col-auto mb-2">
             <div class="card" style="width: 15rem;">
                 <div class="card-body">
@@ -69,5 +74,4 @@ import Navbar from './Navbar.vue'
         </div>
     </div>
 </div>
-
 </template>

@@ -2,6 +2,9 @@
 function getActiveNavLink(link) {
   return this.$route.path === link ? "nav-link active" : "nav-link";
 }
+import { defineProps } from 'vue'
+const props = defineProps({'roles':Array, 'username':String})
+console.log(props)
 </script>
 
 <template>
@@ -33,11 +36,21 @@ function getActiveNavLink(link) {
             <a class="nav-link" aria-current="page" href="/">Logout</a>
           </li>
         </ul>
+        <ul class="navbar-nav mb-2 mb-lg-0">
+        <li class="nav-item dropdown">
+            <a href="#" class="nav-link dropdown-toggle rounded-circle" role="button" data-bs-toggle="dropdown" aria-expanded="false"><img src="../assets/person.jpg" alt="Profile" width="30px" height="30px"
+              class="rounded-circle"></a>
+            <ul class="dropdown-menu">
+              <li><p>Welcome {{username}}</p></li>
+              <li><router-link class="dropdown-item" to="/profile">My Profile</router-link></li>
+              <li><router-link class="dropdown-item" to="/creator" v-if="props.roles.includes('General')">Sign up as Creator</router-link></li>
+              <li><router-link class="dropdown-item" to="/creator" v-if="props.roles.includes('Creator')">Creator Dashboard</router-link></li>
+            </ul>
+          </li>
+            </ul>
         <form class="d-flex" role="search">
           <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
           <button class="btn btn-outline-success" type="submit">Search</button>
-          <a href="/profile" class="rounded-circle" style="margin-left: 0.5em;"><img src="../assets/person.jpg" alt="Profile" width="40px" height="40px"
-              class="rounded-circle"></a>
         </form>
       </div>
     </div>

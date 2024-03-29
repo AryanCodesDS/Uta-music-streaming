@@ -4,7 +4,7 @@ import os
 from application.models import *
 import pandas as pd
 import matplotlib.pyplot as plt
-
+from flask_security import auth_required,roles_required,login_required
 api = Api()
 
 parser = reqparse.RequestParser()
@@ -15,6 +15,7 @@ parser.add_argument('lyrics', type=str, required=False)
 parser.add_argument('creator_id', type=int, required=True,help="Creator id must be integer and is required")
 
 class songAPI(Resource):
+    @auth_required('token')
     def get(self):
         songs_obj = Songs.query.all()
         songs = {}
@@ -31,6 +32,8 @@ class songAPI(Resource):
             i += 1
         return songs
     
+    @roles_required('Creator','Admin')
+    @auth_required('token')
     def post(self):
         song_name=request.form.get('song_name').lower().capitalize()
         song_year=request.form.get('song_year')
@@ -57,6 +60,8 @@ class songAPI(Resource):
         db.session.commit()
         return {'message': 'Song added successfully'}, 201
 
+    @roles_required('Creator','Admin')
+    @auth_required('token')
     def put(self):
         args = parser.parse_args()
         song = Songs.query.filter_by(song_name=args['song_name'].lower().capitalize(),creator = args['creator_id'] ).first()
@@ -71,6 +76,8 @@ class songAPI(Resource):
         db.session.commit()
         return {'message': 'Song updated successfully'}, 200
 
+    @roles_required('Creator','Admin')
+    @auth_required('token')
     def delete(self):
         args = parser.parse_args()
         song = Songs.query.filter_by(song_name=args['song_name'],creator = args['creator_id'] ).first()
@@ -89,6 +96,7 @@ albumparser.add_argument('albumyear', type=str, required=False)
 albumparser.add_argument('creator_id', type=int, required=True)
 
 class albumAPI(Resource):
+    @auth_required('token')
     def get(self):
         opt = request.args.get('alt', default = True, type = bool)
         albums_obj = Albums.query.all()
@@ -123,6 +131,8 @@ class albumAPI(Resource):
                 i += 1
         return albums
     
+    @roles_required('Creator','Admin')
+    @auth_required('token')
     def post(self):
         album_name=request.form.get('album_name').lower().capitalize()
         album_year=request.form.get('album_year')
@@ -146,6 +156,8 @@ class albumAPI(Resource):
         db.session.commit()
         return {'message': 'Album added successfully'}, 201
     
+    @roles_required('Creator','Admin')
+    @auth_required('token')
     def put(self):
         args = albumparser.parse_args()
         album = Albums.query.filter_by(album_name=args['album_name'].lower().capitalize(),creator = args['creator_id'] ).first()
@@ -169,6 +181,8 @@ class albumAPI(Resource):
         db.session.commit()
         return {'message': 'Album updated successfully'}, 200
     
+    @roles_required('Creator','Admin')
+    @auth_required('token')
     def delete(self):
         args = albumparser.parse_args()
         album_todel = Albums.query.filter_by(album_name=args['album_name'].lower().capitalize(),creator =  args['creator_id']).first()

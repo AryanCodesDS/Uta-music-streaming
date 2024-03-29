@@ -1,13 +1,8 @@
-from flask import current_app as app, render_template,request,jsonify,make_response
+from flask import current_app as app,request,jsonify,make_response
 from application.models import db
 from werkzeug.security import check_password_hash as check_hash
 from werkzeug.security import generate_password_hash as hash
-from flask_security import auth_required,roles_required,login_required
 from application.security import datastore
-
-@app.get('/')
-def index():
-    return "hello world"
 
 @app.post('/user-signup')
 def usignup():
@@ -35,14 +30,15 @@ def ulogin():
         user = datastore.find_user(username = username)
     if user :
         if check_hash(user.password,password):
-            response = make_response(jsonify({"authtoken": user.get_auth_token()}), 200)
+            userroles = [u.name for u in user.roles]
+            response = make_response(jsonify({"authtoken": user.get_auth_token(),"uname":user.username,"roles":userroles}), 200)
             response.headers['Access-Control-Allow-Origin'] = '*'
-            print(user)
+            print(user.roles)
             return response,200
         else:
             return jsonify({"error": "Invalid Password"}),400
     else:
-        return jsonify({"error": "User Not Found 1"},mimetype='application/json'),400
+        return jsonify({"error": "User Not Found"}),400
 
 @app.post('/admin-login')
 def adlogin():
@@ -60,10 +56,3 @@ def adlogin():
     else:
         return jsonify({"error": " Not An Admin"}),400
 
-
-@app.get("/admin-dash")
-@login_required
-@auth_required('token')
-@roles_required("Admin")
-def admin():
-    return "Admin Page"

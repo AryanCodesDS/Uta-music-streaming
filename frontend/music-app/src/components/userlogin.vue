@@ -1,4 +1,5 @@
 <script>
+import { useStore } from 'vuex'; // Import useStore hook
 export default {
   data() {
     return {
@@ -6,6 +7,7 @@ export default {
       showPassword: false,
       user: {
         email: null,
+        username:null,
         password: null,
       },
     };
@@ -27,10 +29,12 @@ export default {
       let data = await result.json();
       if (result.ok) {
         console.log("yes");
+        this.$store.commit("setUsername", data.uname);
+        this.$store.commit("setRoles", data.roles);
         localStorage.setItem("authtoken", data.authtoken);
-        this.$router.push({ name: "songs" });
+        this.$router.push({ name: "songs"});
       } else {
-        console.log("failed");
+        alert("failed");
       }
     },
   },
@@ -73,8 +77,8 @@ export default {
           <p class="display-6">Sign in</p>
         </div>
         <div class="mb-3">
-          <label for="musicInputEmail" class="form-label">Email address</label>
-          <input type="email" class="form-control input-lg" id="musicInputEmail" aria-describedby="emailHelp"
+          <label for="musicInputEmailuname" class="form-label">Email address</label>
+          <input type="text" class="form-control input-lg" id="musicInputEmailuname" aria-describedby="emailHelp"
             v-model="user.email" autocomplete="email" />
           <div id="emailHelp" class="form-text">
             We'll never share your email with anyone else.
