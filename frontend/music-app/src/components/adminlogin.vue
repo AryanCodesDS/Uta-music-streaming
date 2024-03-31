@@ -26,7 +26,6 @@ export default {
       });
       let data = await result.json();
       if (result.ok) {
-        console.log("yes");
         localStorage.setItem("authtoken", data.authtoken);
         this.$router.push({ name: "admindash" });
       } else {

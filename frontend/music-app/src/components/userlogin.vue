@@ -27,15 +27,22 @@ export default {
         body: JSON.stringify(this.user),
       });
       let data = await result.json();
+      const store = useStore()
+      try{
       if (result.ok) {
         console.log("yes");
-        this.$store.commit("setUsername", data.uname);
-        this.$store.commit("setRoles", data.roles);
+        store.commit("setUsername", data.uname);
+        store.commit("setRoles", data.roles);
+        store.dispatch('loginUser');
         localStorage.setItem("authtoken", data.authtoken);
         this.$router.push({ name: "songs"});
       } else {
         alert("failed");
       }
+    }
+    catch{
+      console.log("failed");
+    }
     },
   },
 };

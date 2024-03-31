@@ -3,8 +3,17 @@ function getActiveNavLink(link) {
   return this.$route.path === link ? "nav-link active" : "nav-link";
 }
 import { defineProps } from 'vue'
+import { useStore } from 'vuex'
+
 const props = defineProps({'roles':Array, 'username':String})
-console.log(props)
+const store = useStore()
+function logout(){
+  localStorage.setItem('authtoken',"null");
+  store.commit('setUsername', null);
+  store.commit('setRoles', []);
+  store.dispatch('logoutUser');
+  localStorage.removeItem('vuex');
+}
 </script>
 
 <template>
@@ -33,17 +42,17 @@ console.log(props)
             </ul>
           </li>
           <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="/">Logout</a>
+            <a class="nav-link" aria-current="page" href="/" @click ="logout">Logout</a>
           </li>
         </ul>
         <ul class="navbar-nav mb-2 mb-lg-0">
         <li class="nav-item dropdown">
             <a href="#" class="nav-link dropdown-toggle rounded-circle" role="button" data-bs-toggle="dropdown" aria-expanded="false"><img src="../assets/person.jpg" alt="Profile" width="30px" height="30px"
               class="rounded-circle"></a>
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu w-10">
               <li><p>Welcome {{username}}</p></li>
               <li><router-link class="dropdown-item" to="/profile">My Profile</router-link></li>
-              <li><router-link class="dropdown-item" to="/creator" v-if="props.roles.includes('General')">Sign up as Creator</router-link></li>
+              <li><router-link class="dropdown-item" to="/creator" v-if="props.roles.includes('General') && !props.roles.includes('Creator')">Sign up as Creator</router-link></li>
               <li><router-link class="dropdown-item" to="/creator" v-if="props.roles.includes('Creator')">Creator Dashboard</router-link></li>
             </ul>
           </li>
