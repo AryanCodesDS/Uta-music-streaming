@@ -4,9 +4,32 @@ function getActiveNavLink(link) {
 }
 import { defineProps } from 'vue'
 import { useStore } from 'vuex'
-
+import {useRouter} from 'vue-router'
+const router = useRouter()
 const props = defineProps({'roles':Array, 'username':String})
 const store = useStore()
+const user = {
+    username: toString(store.state.username)
+}
+async function signupc(){
+    const res = await fetch('http://127.0.0.1:5000/signup-creator', {
+        method: 'POST',
+        mode: "cors",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(user),
+      });
+      let data = await res.json();
+    if(res.ok){
+        router.push({name : 'creator'})
+    }
+    else{
+        console.log("Error")
+    }
+}
+
 function logout(){
   localStorage.setItem('authtoken',"null");
   store.commit('setUsername', null);
@@ -14,6 +37,8 @@ function logout(){
   store.dispatch('logoutUser');
   localStorage.removeItem('vuex');
 }
+
+
 </script>
 
 <template>
@@ -52,7 +77,7 @@ function logout(){
             <ul class="dropdown-menu w-10">
               <li><p>Welcome {{username}}</p></li>
               <li><router-link class="dropdown-item" to="/profile">My Profile</router-link></li>
-              <li><router-link class="dropdown-item" to="/creator" v-if="props.roles.includes('General') && !props.roles.includes('Creator')">Sign up as Creator</router-link></li>
+              <li><router-link class="dropdown-item" @click.prevent="signupc" to="/creator" v-if="props.roles.includes('General') && !props.roles.includes('Creator')">Sign up as Creator</router-link></li>
               <li><router-link class="dropdown-item" to="/creator" v-if="props.roles.includes('Creator')">Creator Dashboard</router-link></li>
             </ul>
           </li>

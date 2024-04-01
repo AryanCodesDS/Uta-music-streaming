@@ -1,7 +1,9 @@
 <script setup>
 import Navbar from './Navbar.vue'
 import { useStore } from 'vuex'
+import {useRouter} from 'vue-router'
 const store = useStore()
+const router = useRouter()
 const username = store.state.username
 const roles = store.state.roles
 </script>

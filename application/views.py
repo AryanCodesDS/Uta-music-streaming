@@ -3,6 +3,7 @@ from application.models import db
 from werkzeug.security import check_password_hash as check_hash
 from werkzeug.security import generate_password_hash as hash
 from application.security import datastore
+from flask_security import roles_accepted,auth_required
 
 @app.post('/user-signup')
 def usignup():
@@ -56,3 +57,24 @@ def adlogin():
     else:
         return jsonify({"error": " Not An Admin"}),400
 
+@app.post('/signup-creator')
+def signc():
+    data = request.json
+    user  = datastore.find_user(username = data.get('username'))
+    if datastore.add_role_to_user(user,"Creator") == False:
+        response = make_response(jsonify({"NotSucess":"You are creator already"}), 400)
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
+    else:
+        response = make_response(jsonify({"Sucess":"You are creator now"}), 200)
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        datastore.add_role_to_user(user,"Creator")
+        db.session.commit()
+        return response
+    
+
+@roles_accepted("Creator")
+@auth_required("token")
+@app.post('/come')
+def cos():
+    return {"cos":"yesy"}

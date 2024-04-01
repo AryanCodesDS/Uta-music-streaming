@@ -2,9 +2,10 @@ from flask_restful import Api, Resource, reqparse
 from flask import request,send_file
 import os
 from application.models import *
+from application.security import datastore
 import pandas as pd
 import matplotlib.pyplot as plt
-from flask_security import auth_required,roles_required,login_required
+from flask_security import auth_required,roles_accepted
 api = Api()
 
 parser = reqparse.RequestParser()
@@ -12,7 +13,7 @@ parser.add_argument('song_name', type=str, required=True,help="Song name must be
 parser.add_argument('new_song_name', type=str, required=False)
 parser.add_argument('genre', type=str, required=True,help="Genre must be string and is required")
 parser.add_argument('lyrics', type=str, required=False)
-parser.add_argument('creator_id', type=int, required=True,help="Creator id must be integer and is required")
+parser.add_argument('username', type=str, required=True,help="Creator id must be string and is required")
 
 class songAPI(Resource):
     @auth_required('token')
@@ -28,12 +29,14 @@ class songAPI(Resource):
             data['Genre'] = song.genre  
             data['Lyrics'] = song.lyrics
             data['Ratings'] = song.ratings
+            song['Song_location'] = song.song_loc
+            song['status'] = song.status
             songs[f'song_{i}'] = data
             i += 1
         return songs
     
-    @roles_required('Creator','Admin')
     @auth_required('token')
+    @roles_accepted('Creator','Admin')
     def post(self):
         song_name=request.form.get('song_name').lower().capitalize()
         song_year=request.form.get('song_year')
@@ -42,7 +45,7 @@ class songAPI(Resource):
         genre=request.form.get('genre').lower().capitalize()
         lyrics=request.form.get('lyrics')
         file = request.files.get('song_file')
-        UPLOAD_FOLDER = './static/albums/'
+        UPLOAD_FOLDER = '../static/albums/'
         if file.filename == '' or (file.filename.endswith('.mp3')) == False:
             return {'message': 'No Mp3 file selected '}, 400
         if Songs.query.filter_by(song_name=song_name,creator=creator).first() is not None:
@@ -60,8 +63,8 @@ class songAPI(Resource):
         db.session.commit()
         return {'message': 'Song added successfully'}, 201
 
-    @roles_required('Creator','Admin')
     @auth_required('token')
+    @roles_accepted('Creator','Admin')
     def put(self):
         args = parser.parse_args()
         song = Songs.query.filter_by(song_name=args['song_name'].lower().capitalize(),creator = args['creator_id'] ).first()
@@ -76,8 +79,9 @@ class songAPI(Resource):
         db.session.commit()
         return {'message': 'Song updated successfully'}, 200
 
-    @roles_required('Creator','Admin')
+    
     @auth_required('token')
+    @roles_accepted('Creator','Admin')
     def delete(self):
         args = parser.parse_args()
         song = Songs.query.filter_by(song_name=args['song_name'],creator = args['creator_id'] ).first()
@@ -93,7 +97,7 @@ albumparser.add_argument('album_name', type=str, required=True)
 albumparser.add_argument('new_album_name', type=str, required=False)
 albumparser.add_argument('albumgenre', type=str, required=False)
 albumparser.add_argument('albumyear', type=str, required=False)
-albumparser.add_argument('creator_id', type=int, required=True)
+albumparser.add_argument('username', type=str, required=True,help="Creator id must be string and is required")
 
 class albumAPI(Resource):
     @auth_required('token')
@@ -116,7 +120,8 @@ class albumAPI(Resource):
                         'Year' : song.song_year,
                         'Genre' : song.genre,
                         'Lyrics' : song.lyrics,
-                        'Ratings' : song.ratings
+                        'Ratings' : song.ratings,
+                        'Song_Location' : song.song_loc
                     })
                 albums[f'album_{i}'] = data
                 i += 1
@@ -131,33 +136,44 @@ class albumAPI(Resource):
                 i += 1
         return albums
     
-    @roles_required('Creator','Admin')
+    
+    @roles_accepted("Creator","Admin")
     @auth_required('token')
     def post(self):
-        album_name=request.form.get('album_name').lower().capitalize()
-        album_year=request.form.get('album_year')
-        creator = request.form.get('creator_id')
-        artist = User.query.filter_by(user_id=creator).first().name
-        genre=request.form.get('genre').lower().capitalize()
-        file = request.files.get('album_art')
-        UPLOAD_FOLDER = './static/albums/'
-        if file.filename == '' or (file.filename.endswith('.jpg') or file.filename.endswith('.png')) == False:
-            return {'message': 'No Image file selected '}, 400
-        if Albums.query.filter_by(album_name=album_name,creator=creator).first() is not None:
-            return {'message': 'Album already exists'}, 400
-        else :
-            album_folder = os.path.join(UPLOAD_FOLDER, album_name)
-            if not os.path.exists(album_folder):
-                os.mkdir(album_folder)
-            album_art = os.path.join(album_folder,'album_art.' + file.filename.rsplit('.', 1)[1].lower()).replace("\\", "/")
-            file.save(album_art)
-        album = Albums( album_name=album_name, album_year=album_year, creator=creator,creator_name = artist , genre=genre, album_art=album_art)
-        db.session.add(album)
-        db.session.commit()
-        return {'message': 'Album added successfully'}, 201
+        try :
+            album_name=request.form.get('album_name').lower().capitalize()
+            print(album_name)
+            album_year=request.form.get('album_year')
+            print(album_year)
+            creator = request.form.get('username')
+            print(creator)
+            artist = datastore.find_user(username = creator)
+            print(artist)
+            genre=request.form.get('genre').lower().capitalize()
+            print(genre)
+            file = request.files.get('album_art')
+            UPLOAD_FOLDER = "../static/albums"
+            if file.filename == '' or (file.filename.endswith('.jpg') or file.filename.endswith('.png')) == False:
+                return {'message': 'No Image file selected '}, 400
+            if Albums.query.filter_by(album_name=album_name,creator=artist.user_id).first() is not None:
+                return {'message': 'Album already exists'}, 400
+            else :
+                print("here")
+                album_folder = os.path.join(UPLOAD_FOLDER, album_name)
+                if not os.path.exists(album_folder):
+                    os.makedirs(album_folder)
+                album_art = os.path.join(album_folder,'album_art.' + file.filename.rsplit('.', 1)[1].lower()).replace("\\", "/")
+                file.save(album_art)
+                album = Albums( album_name=album_name, album_year=album_year, creator=artist.user_id, genre=genre, album_art=album_art)
+                db.session.add(album)
+                db.session.commit()
+                return {'message': 'Album added successfully'}, 200
+        except  Exception as e:
+            print(e)
+            return {'message': 'No Album added'}, 400
     
-    @roles_required('Creator','Admin')
     @auth_required('token')
+    @roles_accepted('Creator','Admin')
     def put(self):
         args = albumparser.parse_args()
         album = Albums.query.filter_by(album_name=args['album_name'].lower().capitalize(),creator = args['creator_id'] ).first()
@@ -165,8 +181,8 @@ class albumAPI(Resource):
             return {'message': 'Album not found'}, 404
         if args['new_album_name'] != None:
             album_name = args['new_album_name'].lower().capitalize()
-            curr_folder = f'./static/albums/{album.album_name}'
-            new_folder = f'./static/albums/{album_name}'
+            curr_folder = f'../static/albums/{album.album_name}'
+            new_folder = f'../static/albums/{album_name}'
             os.rename(curr_folder,new_folder)
             if album.songs:
                 for song in album.songs:
@@ -181,8 +197,9 @@ class albumAPI(Resource):
         db.session.commit()
         return {'message': 'Album updated successfully'}, 200
     
-    @roles_required('Creator','Admin')
+    
     @auth_required('token')
+    @roles_accepted('Creator','Admin')
     def delete(self):
         args = albumparser.parse_args()
         album_todel = Albums.query.filter_by(album_name=args['album_name'].lower().capitalize(),creator =  args['creator_id']).first()

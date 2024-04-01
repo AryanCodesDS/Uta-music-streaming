@@ -1,5 +1,5 @@
 <script>
-import { useStore } from 'vuex'; // Import useStore hook
+import store  from '../../plugins/store'; // Import useStore hook
 export default {
   data() {
     return {
@@ -27,7 +27,6 @@ export default {
         body: JSON.stringify(this.user),
       });
       let data = await result.json();
-      const store = useStore()
       try{
       if (result.ok) {
         console.log("yes");
