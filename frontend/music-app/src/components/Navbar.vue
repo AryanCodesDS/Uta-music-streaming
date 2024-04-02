@@ -37,8 +37,6 @@ function logout(){
   store.dispatch('logoutUser');
   localStorage.removeItem('vuex');
 }
-
-
 </script>
 
 <template>
@@ -74,11 +72,13 @@ function logout(){
         <li class="nav-item dropdown">
             <a href="#" class="nav-link dropdown-toggle rounded-circle" role="button" data-bs-toggle="dropdown" aria-expanded="false"><img src="../assets/person.jpg" alt="Profile" width="30px" height="30px"
               class="rounded-circle"></a>
-            <ul class="dropdown-menu w-10">
-              <li><p>Welcome {{username}}</p></li>
-              <li><router-link class="dropdown-item" to="/profile">My Profile</router-link></li>
-              <li><router-link class="dropdown-item" @click.prevent="signupc" to="/creator" v-if="props.roles.includes('General') && !props.roles.includes('Creator')">Sign up as Creator</router-link></li>
-              <li><router-link class="dropdown-item" to="/creator" v-if="props.roles.includes('Creator')">Creator Dashboard</router-link></li>
+            <ul class="dropdown-menu">
+              
+              <li class="dropdown-item p-2 disabled"><p>Welcome {{username}}</p></li>
+              <li><router-link class="dropdown-item p-2" to="/profile">My Profile</router-link></li>
+              <li><router-link class="dropdown-item p-2" @click.prevent="signupc" to="/creator" v-if="props.roles.includes('General') && !props.roles.includes('Creator')">Sign up as Creator</router-link></li>
+              <li><router-link class="dropdown-item p-2" to="/creator" v-if="props.roles.includes('Creator')">Creator Dashboard</router-link></li>
+
             </ul>
           </li>
             </ul>

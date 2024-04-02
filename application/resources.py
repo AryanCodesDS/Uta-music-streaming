@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from flask_security import auth_required,roles_accepted
 api = Api()
 
+
 parser = reqparse.RequestParser()
 parser.add_argument('song_name', type=str, required=True,help="Song name must be string and is required")
 parser.add_argument('new_song_name', type=str, required=False)
@@ -16,52 +17,61 @@ parser.add_argument('lyrics', type=str, required=False)
 parser.add_argument('username', type=str, required=True,help="Creator id must be string and is required")
 
 class songAPI(Resource):
+
     @auth_required('token')
     def get(self):
-        songs_obj = Songs.query.all()
-        songs = {}
-        i=1
-        for song in songs_obj:
-            data = {}
-            data['Song name'] = song.song_name
-            data['Year'] = song.song_year
-            data['Album name'] = Albums.query.filter_by(album_id=song.album_id).first()
-            data['Genre'] = song.genre  
-            data['Lyrics'] = song.lyrics
-            data['Ratings'] = song.ratings
-            song['Song_location'] = song.song_loc
-            song['status'] = song.status
-            songs[f'song_{i}'] = data
-            i += 1
-        return songs
-    
+        try:
+            songs_obj = Songs.query.all()
+            songs = []
+            if len(songs_obj) != 0:
+                for song in songs_obj:
+                    data = {}
+                    data['Songname'] = song.song_name
+                    data['Year'] = song.song_year
+                    data['Album'] = Albums.query.filter_by(album_id=song.album_id).first().album_name
+                    data['Genre'] = song.genre  
+                    data['Lyrics'] = song.lyrics
+                    data['Ratings'] = song.ratings
+                    data['Song_location'] = song.song_loc
+                    data['status'] = song.status
+                    songs.append(data)
+                return songs
+            
+            else:
+                return {'message':'no songs found'},400
+        except Exception as e:
+            print(e)
+            return {'message':'Some error occured'},404
+
     @auth_required('token')
     @roles_accepted('Creator','Admin')
     def post(self):
-        song_name=request.form.get('song_name').lower().capitalize()
-        song_year=request.form.get('song_year')
-        album_name=request.form.get('album_name').lower().capitalize()
-        creator = request.form.get('creator_id')
-        genre=request.form.get('genre').lower().capitalize()
-        lyrics=request.form.get('lyrics')
-        file = request.files.get('song_file')
-        UPLOAD_FOLDER = '../static/albums/'
-        if file.filename == '' or (file.filename.endswith('.mp3')) == False:
-            return {'message': 'No Mp3 file selected '}, 400
-        if Songs.query.filter_by(song_name=song_name,creator=creator).first() is not None:
-            return {'message': 'Song already exists'}, 400
-        if Albums.query.filter_by(album_name=album_name).first() is None:
-            return {'message': 'Album not found'}, 404
-        else :
-            album = Albums.query.filter_by(album_name=album_name,creator=creator).first()
-            album_id = album.album_id
-            album_folder = os.path.join(UPLOAD_FOLDER, album.album_name)
-            song_loc = os.path.join(album_folder,file.filename).replace("\\", "/")
-            file.save(song_loc)
-        song = Songs( song_name=song_name, song_year=song_year, album_id=album_id, genre=genre, lyrics=lyrics,creator=creator, song_loc=song_loc)
-        db.session.add(song)
-        db.session.commit()
-        return {'message': 'Song added successfully'}, 201
+        try:
+            song_name=request.form.get('song_name').lower().capitalize()
+            album_name=request.form.get('album_name').lower().capitalize()
+            creator = datastore.find_user(username=request.form.get('username')).user_id
+            genre=request.form.get('genre').lower().capitalize()
+            lyrics=request.form.get('lyrics')
+            file = request.files.get('song_file')
+            UPLOAD_FOLDER = './static/albums/'
+            if file.filename == '' or (file.filename.endswith('.mp3')) == False:
+                return {'message': 'No Mp3 file selected '}, 400
+            if Songs.query.filter_by(song_name=song_name,creator=creator).first() is not None:
+                return {'message': 'Song already exists'}, 400
+            if Albums.query.filter_by(album_name=album_name).first() is None:
+                return {'message': 'Album not found'}, 404
+            else :
+                album = Albums.query.filter_by(album_name=album_name,creator=creator).first()
+                album_id = album.album_id
+                album_folder = os.path.join(UPLOAD_FOLDER, album.album_name)
+                song_loc = os.path.join(album_folder,file.filename).replace("\\", "/")
+                file.save(song_loc)
+            song = Songs( song_name=song_name, song_year=album.album_year, album_id=album_id, genre=genre, lyrics=lyrics,creator=creator, song_loc=song_loc)
+            db.session.add(song)
+            db.session.commit()
+            return {'message': 'Song added successfully'}, 200
+        except Exception as e:
+            return {'message':'Some error occured'},404
 
     @auth_required('token')
     @roles_accepted('Creator','Admin')
@@ -141,7 +151,7 @@ class albumAPI(Resource):
     @auth_required('token')
     def post(self):
         try :
-            album_name=request.form.get('album_name').lower().capitalize()
+            album_name=request.form.get('album_name').lower().capitalize().strip()
             print(album_name)
             album_year=request.form.get('album_year')
             print(album_year)
@@ -152,7 +162,7 @@ class albumAPI(Resource):
             genre=request.form.get('genre').lower().capitalize()
             print(genre)
             file = request.files.get('album_art')
-            UPLOAD_FOLDER = "../static/albums"
+            UPLOAD_FOLDER = "./static/albums/"
             if file.filename == '' or (file.filename.endswith('.jpg') or file.filename.endswith('.png')) == False:
                 return {'message': 'No Image file selected '}, 400
             if Albums.query.filter_by(album_name=album_name,creator=artist.user_id).first() is not None:
@@ -160,8 +170,11 @@ class albumAPI(Resource):
             else :
                 print("here")
                 album_folder = os.path.join(UPLOAD_FOLDER, album_name)
+                print(album_folder)
+                print(os.path.exists(album_folder))
                 if not os.path.exists(album_folder):
-                    os.makedirs(album_folder)
+                    print("yes")
+                    os.makedirs(album_folder,exist_ok=True)
                 album_art = os.path.join(album_folder,'album_art.' + file.filename.rsplit('.', 1)[1].lower()).replace("\\", "/")
                 file.save(album_art)
                 album = Albums( album_name=album_name, album_year=album_year, creator=artist.user_id, genre=genre, album_art=album_art)
@@ -176,13 +189,14 @@ class albumAPI(Resource):
     @roles_accepted('Creator','Admin')
     def put(self):
         args = albumparser.parse_args()
-        album = Albums.query.filter_by(album_name=args['album_name'].lower().capitalize(),creator = args['creator_id'] ).first()
+        creator=datastore.find_user(username=args['username'])
+        album = Albums.query.filter_by(album_name=args['album_name'].lower().capitalize(),creator=creator.user_id).first()
         if album is None:
             return {'message': 'Album not found'}, 404
         if args['new_album_name'] != None:
             album_name = args['new_album_name'].lower().capitalize()
-            curr_folder = f'../static/albums/{album.album_name}'
-            new_folder = f'../static/albums/{album_name}'
+            curr_folder = f'./static/albums/{album.album_name}'
+            new_folder = f'./static/albums/{album_name}'
             os.rename(curr_folder,new_folder)
             if album.songs:
                 for song in album.songs:
@@ -197,14 +211,14 @@ class albumAPI(Resource):
         db.session.commit()
         return {'message': 'Album updated successfully'}, 200
     
-    
     @auth_required('token')
     @roles_accepted('Creator','Admin')
     def delete(self):
         args = albumparser.parse_args()
-        album_todel = Albums.query.filter_by(album_name=args['album_name'].lower().capitalize(),creator =  args['creator_id']).first()
+        creator=datastore.find_user(username=args['username'])
+        album_todel = Albums.query.filter_by(album_name=args['album_name'].lower().capitalize(),creator=creator.user_id).first()
         album_folder = f'static/albums/{album_todel.album_name}'
-        songs_del = Songs.query.filter_by(album_id=album_todel.album_id,album_name=album_todel.album_name).all()
+        songs_del = Songs.query.filter_by(album_id=album_todel.album_id).all()
         if songs_del:
             for song in songs_del:
                 db.session.delete(song)

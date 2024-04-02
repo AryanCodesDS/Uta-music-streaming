@@ -29,7 +29,6 @@ export default {
       let data = await result.json();
       try{
       if (result.ok) {
-        console.log("yes");
         store.commit("setUsername", data.uname);
         store.commit("setRoles", data.roles);
         store.dispatch('loginUser');
