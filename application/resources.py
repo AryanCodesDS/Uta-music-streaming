@@ -29,6 +29,8 @@ class songAPI(Resource):
                     data['Songname'] = song.song_name
                     data['Year'] = song.song_year
                     data['Album'] = Albums.query.filter_by(album_id=song.album_id).first().album_name
+                    data['Artist'] = User.query.filter_by(user_id=song.creator).first().name
+                    data['Album_art'] = Albums.query.filter_by(album_id=song.album_id).first().album_art
                     data['Genre'] = song.genre  
                     data['Lyrics'] = song.lyrics
                     data['Ratings'] = song.ratings

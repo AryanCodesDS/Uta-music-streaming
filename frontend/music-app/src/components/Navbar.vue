@@ -2,7 +2,6 @@
 function getActiveNavLink(link) {
   return this.$route.path === link ? "nav-link active" : "nav-link";
 }
-import { defineProps } from 'vue'
 import { useStore } from 'vuex'
 import {useRouter} from 'vue-router'
 const router = useRouter()
@@ -78,7 +77,6 @@ function logout(){
               <li><router-link class="dropdown-item p-2" to="/profile">My Profile</router-link></li>
               <li><router-link class="dropdown-item p-2" @click.prevent="signupc" to="/creator" v-if="props.roles.includes('General') && !props.roles.includes('Creator')">Sign up as Creator</router-link></li>
               <li><router-link class="dropdown-item p-2" to="/creator" v-if="props.roles.includes('Creator')">Creator Dashboard</router-link></li>
-
             </ul>
           </li>
             </ul>

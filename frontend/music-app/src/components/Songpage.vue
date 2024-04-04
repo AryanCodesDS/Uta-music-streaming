@@ -17,27 +17,32 @@ onMounted(async () => {
             songs.value = parsedData.songs;
             songGroups.value = parsedData.songGroups;
         }
-        else{
-        const response = await fetch('http://127.0.0.1:5000/api/songs', {
-            method: 'GET',
-            type: 'cors',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authentication-Token': localStorage.getItem('authtoken'),
-            },
-        })
-        const data = await response.json()
-        songs.value = data.map(song => ({
-            title: song.Songname,
-            album: song.Album,
-        }))
-        const chunkSize = 5;
-        songGroups = [];
-        for (let i = 0; i < songs.value.length; i += chunkSize) {
-            songGroups.push(songs.value.slice(i, i + chunkSize));
+        else {
+            const response = await fetch('http://127.0.0.1:5000/api/songs', {
+                method: 'GET',
+                type: 'cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authentication-Token': localStorage.getItem('authtoken'),
+                },
+            })
+            const data = await response.json()
+            songs.value = data.map(song => ({
+                title: song.Songname,
+                year: song.Year,
+                genre: song.Genre,
+                album: song.Album,
+                artist: song.Artist,
+                image: song.Album_art,
+                audio: song.Song_location,
+            }))
+            const chunkSize = 5;
+            songGroups = [];
+            for (let i = 0; i < songs.value.length; i += chunkSize) {
+                songGroups.push(songs.value.slice(i, i + chunkSize));
+            }
+            localStorage.setItem('songData', JSON.stringify({ songs: songs.value, songGroups: songGroups }));
         }
-        localStorage.setItem('songData', JSON.stringify({ songs: songs.value, songGroups: songGroups }));
-    }
     }
     catch (error) {
         console.error('Error fetching songs:', error);
@@ -50,11 +55,12 @@ console.log(songs)
     <div class="mb-3">
         <Navbar :roles="roles" :username="username" />
     </div>
-    <div class="m-3">
-        <h3>Most Liked</h3>
-    </div>
+    <div id="musiccont1">
+        <div class="m-3">
+            <h3>Most Liked</h3>
+        </div>
         <div id="songCarousel" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner">
+            <div class="carousel-inner" style="padding-left: 6%;padding-right: 6%;">
                 <div v-for="(group, index) in songGroups.value" :key="index"
                     :class="{ 'carousel-item': true, 'active': index === 0 }">
                     <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-4">
@@ -79,17 +85,49 @@ console.log(songs)
                 <span class="visually-hidden">Next</span>
             </button>
         </div>
-    <div class="sticky-audio-player">
-        <div class="container">
+    </div>
+    <div id="musiccont2">
+        <div class="m-3">
+            <h3>Most Liked</h3>
+        </div>
+        <div id="songCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner" style="padding-left: 6%;padding-right: 6%;">
+                <div v-for="(group, index) in songGroups.value" :key="index"
+                    :class="{ 'carousel-item': true, 'active': index === 0 }">
+                    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-4">
+                        <div v-for="(song, songIndex) in group" :key="songIndex" class="col">
+                            <div class="card">
+                                <img :src="'images/' + song.image" class="card-img-top" :alt="song.title">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ song.title }}</h5>
+                                    <p class="card-text">Artist: {{ song.artist }}<br>Album: {{ song.album }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#songCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#songCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+    <div class="sticky-audio-player" style="height:7rem;">
+        <div class="container p-4">
             <div class="row">
-                <div class="col-md-2">
+                <div class="col-md-1">
                     <img src="https://via.placeholder.com/50" alt="Album Cover" class="img-fluid">
                 </div>
-                <div class="col-md-8">
+                <div class="col-md-4">
                     <h5>Song Title</h5>
                     <p>Artist Name</p>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-6">
                     <audio controls style="width: 100%;">
                         <source src="" type="audio/mpeg">
                         Your browser does not support the audio element.
@@ -107,21 +145,24 @@ console.log(songs)
     width: 100%;
     background-color: #333;
     color: #fff;
-    padding: 10px;
     z-index: 1000;
+}
+
+.carousel-control-next-icon,
+.carousel-control-prev-icon {
+    width: 2vw;
+    height: 2vw;
+
 }
 
 .carousel-control-prev,
 .carousel-control-next {
-    color: #fff;
-    background-color: #007bff;
-    border-color: #007bff;
+    width: 4vw;
+    background-color: black;
 }
 
 .carousel-control-prev:hover,
 .carousel-control-next:hover {
-    color: #fff;
-    background-color: #0056b3;
-    border-color: #0056b3;
+    filter: invert(100%);
 }
 </style>
