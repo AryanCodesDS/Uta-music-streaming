@@ -36,14 +36,14 @@ export default {
         this.user.msg["repassword"] = "";
       }
     },
-    "user.repassword": function () {
-      if (this.user.password !== this.user.repassword) {
-        this.user.msg["repassword"] = "*Passwords do not match";
-      } else {
-        this.user.msg["repassword"] = "";
-      }
-    },
-    deep: true,
+    "user.repassword":
+      function () {
+        if (this.user.password !== this.user.repassword) {
+          this.user.msg["repassword"] = "*Passwords do not match";
+        } else {
+          this.user.msg["repassword"] = "";
+        }
+      },
   },
   methods: {
     validateUsername(value) {
@@ -119,9 +119,10 @@ export default {
         </div>
       </div>
     </nav>
-    <div class="d-flex justify-content-center align-items-center flex-column w-100 vh-100 bg-info-subtle p-0">
+    <div style="height:100vh;">
+    <div class="d-flex justify-content-center align-items-center flex-column w-100 bg-info-subtle p-5">
       <form>
-        <div class="p-5 w-40 m-auto bg-white form-group">
+        <div class="p-4 w-40 m-auto bg-white form-group">
           <div class="mb-3">
             <p class="display-6">Sign Up</p>
             <p class="text-muted">
@@ -130,7 +131,7 @@ export default {
           </div>
           <div class="mb-3">
             <label for="musicInputname" class="form-label">Name</label>
-            <input type="text" class="form-control input-lg" aria-label="Name" id="musicInputname" v-model="user.name"
+            <input type="text" class="form-control input-lg" aria-label="Name" id="musicInputname" v-model="user.name" autocapitalize="on"
               aria-describedby="basic-addon1" placeholder="Your Full Name" />
           </div>
           <div class="mb-3 d-flex flex-column">
@@ -141,6 +142,7 @@ export default {
               </div>
               <input type="text" class="form-control" aria-label="Username" id="musicInputUsername"
                 v-model="user.username" aria-describedby="basic-addon1" minlength="8" placeholder="User@123"
+                autocomplete="name"
                 title="Must contain at least one  number and one uppercase and lowercase letter, and at least 8 or more characters" />
             </div>
             <span v-if="user.msg.username"><small style="color: red; font-size: 0.7em">{{
@@ -190,6 +192,7 @@ export default {
         </div>
       </form>
     </div>
+  </div>
   </div>
 </template>
 

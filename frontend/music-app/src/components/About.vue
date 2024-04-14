@@ -96,7 +96,9 @@ methods: {
 <style scoped>
 .section {
   background-image: url("../assets/banner1.png");
-  background-size: fill;
-  height: 100vh;
+  background-size: cover;
+  background-repeat: no-repeat;
+  height: 100rem;
+  widows: 100%;
 }
 </style>

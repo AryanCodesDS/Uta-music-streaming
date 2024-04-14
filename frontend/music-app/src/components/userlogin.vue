@@ -1,23 +1,23 @@
 <script>
-import store  from '../../plugins/store'; // Import useStore hook
+import store from '../../plugins/store';
 export default {
   data() {
     return {
       sactive: "",
+      flag: true,
       showPassword: false,
       user: {
         email: null,
-        username:null,
         password: null,
       },
     };
   },
-
   methods: {
     getActiveNavLink(link) {
       return this.$route.path === link ? "nav-link active" : "nav-link";
     },
-    async getAuthToken() {
+    async gettoken() {
+
       let result = await fetch("http://127.0.0.1:5000/user-login", {
         mode: "cors",
         method: "POST",
@@ -27,20 +27,28 @@ export default {
         body: JSON.stringify(this.user),
       });
       let data = await result.json();
-      try{
-      if (result.ok) {
-        store.commit("setUsername", data.uname);
-        store.commit("setRoles", data.roles);
-        store.dispatch('loginUser');
-        localStorage.setItem("authtoken", data.authtoken);
-        this.$router.push({ name: "songs"});
-      } else {
-        alert("failed");
+      try {
+        if (result.ok) {
+          this.flag = false
+          console.log("here");
+          store.commit("setUsername", data.uname);
+          store.commit("setRoles", data.roles);
+          localStorage.setItem("authtoken", data.authtoken);
+        }
       }
-    }
-    catch{
-      console.log("failed");
-    }
+      catch {
+        console.log("failed");
+      }
+    },
+    async getAuthToken() {
+      if (localStorage.getItem("authtoken") !== null) {
+
+        store.dispatch('loginUser');
+        this.$router.push({ name: "songs" });
+      }
+      else {
+        alert("Invalid Credentials");
+      }
     },
   },
 };
@@ -76,7 +84,7 @@ export default {
         </div>
       </div>
     </nav>
-    <div class="d-flex justify-content-center align-items-center flex-column w-100 vh-100 bg-success-subtle">
+    <div class="d-flex justify-content-center align-items-center flex-column w-100 vh-100  bg-success-subtle">
       <form class="d-flex justify-content-center align-items-center flex-column 40-w p-5 bg-white">
         <div class="mb-3">
           <p class="display-6">Sign in</p>
@@ -93,14 +101,14 @@ export default {
           <label for="musicInputPassword" class="form-label">Password</label>
           <div class="d-flex flex-row">
             <input :type="showPassword ? 'text' : 'password'" class="form-control input-lg" id="musicInputPassword"
-              v-model="user.password" autocomplete="current-password" />
+              v-model="user.password" autocomplete="current-password" @input="gettoken" />
             <button style="margin-left: 1em" class="btn btn-outline-secondary" type="button"
               @click="showPassword = !showPassword">
               <img src="../assets/eye.svg" />
             </button>
           </div>
         </div>
-        <button type="submit" @click.prevent="getAuthToken" class="btn btn-primary mb-3">
+        <button type="button" @click="getAuthToken" class="btn btn-primary mb-3" :disabled="flag">
           Login
         </button>
         <p>Don't have an account?<a href="/user-signup" class="mt-3">Signup</a></p>

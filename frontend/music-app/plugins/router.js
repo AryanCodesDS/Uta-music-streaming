@@ -8,7 +8,6 @@ import userlogin from '../src/components/userlogin.vue'
 import usersignup from '../src/components/usersignup.vue'
 import adminlogin from '../src/components/adminlogin.vue'
 import admindash from '../src/components/Admindash.vue'
-import allsongs from '../src/components/allsongs.vue'
 import allalbums from '../src/components/allalbums.vue'
 import allplay from '../src/components/allplay.vue'
 import profile from '../src/components/Profile.vue'
@@ -45,7 +44,7 @@ const routes = [
         name: 'adminlogin',
         component: adminlogin,
         meta: {
-            requiresAuth: true,
+            requiresAuth: false,
           },
     },
     {
@@ -68,10 +67,6 @@ const routes = [
         path: '/admin-dashboard',
         name: 'admindash',
         component : admindash,
-        //beforeEnter: (to, from) => {
-        //    if(store.state.roles.includes("Admin"))
-        //   return true
-        //}
         meta: {
             requiresAuth: true,
           },
@@ -102,14 +97,6 @@ const routes = [
         path: '/my-playlists',
         name: 'allplaylists',
         component:allplay,
-        meta: {
-            requiresAuth: true,
-          },
-    },
-    {
-        path: '/more-songs',
-        name: 'moresongs',
-        component: allsongs,
         meta: {
             requiresAuth: true,
           },

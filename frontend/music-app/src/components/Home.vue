@@ -71,14 +71,10 @@
     <div style="margin-top: 3em" class="d-flex align-items-center justify-content-center">
       <div class="row">
         <div class="col px-md-5">
-          <button type="button" class="btn btn-outline-light btn-lg ml-2 px-5">
-            <router-link to="/user-login" class="nav-link">Login</router-link>
-          </button>
+            <router-link to="/user-login" class="nav-link"><button type="button" class="btn btn-outline-light btn-lg ml-2 px-5">Login</button></router-link>
         </div>
         <div class="col px-md-5">
-          <button type="button" class="btn btn-outline-light btn-lg ml-2 px-5">
-            <router-link to="/user-signup" class="nav-link">Signup</router-link>
-          </button>
+            <router-link to="/user-signup" class="nav-link"><button type="button" class="btn btn-outline-light btn-lg ml-2 px-5">Signup</button></router-link>
         </div>
       </div>
     </div>

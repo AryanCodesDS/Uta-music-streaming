@@ -4,9 +4,13 @@ from flask_security import Security
 from application.security import datastore
 from werkzeug.security import generate_password_hash as hash
 from application.models import db,User,Role
-from application.resources import api
+from application.resources import api,cache
 from flask_cors import CORS
 from config import DevConfig
+from application.worker import celery_init_app
+from celery.schedules import crontab
+from application.task import daily_reminder,monthly_reminder
+
 app = Flask(__name__,static_folder = './static',template_folder="./templates" )
 
 #initializing the app and related modules.
@@ -15,6 +19,7 @@ with app.app_context():
     db.init_app(app)
     db.create_all()
     CORS(app,support_credentials=True)
+    cache.init_app(app)
     api.init_app(app)
     security = Security(app,datastore)
     datastore.find_or_create_role(name="General")
@@ -29,7 +34,18 @@ with app.app_context():
     #search.init_app(app)
     import application.views
     
-    
+celery_app = celery_init_app(app) 
+@celery_app.on_after_configure.connect
+def send_email(sender, **kwargs):
+    sender.add_periodic_task(
+        crontab(minute="*"),
+        daily_reminder.s('21f1001076@ds.study.iitm.ac.in', 'UTA - Daily App Visit Reminder'),
+    )
+    sender.add_periodic_task(
+        crontab(minute="*"),
+        monthly_reminder.s('21f1001076@ds.study.iitm.ac.in', 'UTA - Monthly Report Reminder'),
+    )
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    debug = True
+    app.run()

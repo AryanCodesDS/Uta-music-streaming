@@ -1,4 +1,6 @@
 <script>
+import store from '../../plugins/store';
+
 export default {
   data() {
     return {
@@ -27,9 +29,12 @@ export default {
       let data = await result.json();
       if (result.ok) {
         localStorage.setItem("authtoken", data.authtoken);
+        store.dispatch("loginUser");
+        store.commit("setUsername", data.username);
+        store.commit("setRoles", data.roles);
         this.$router.push({ name: "admindash" });
       } else {
-        console.log("failed");
+        alert("Invalid Credentials");
       }
     },
   },

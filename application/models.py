@@ -18,7 +18,6 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(), nullable=False)
     fs_uniquifier = db.Column(db.String(255),unique=True, nullable=False)
     active = db.Column(db.Boolean, default=True)
-    #status = db.Column(db.String(30), default='Whitelisted', nullable=False)
     playlists=db.relationship('Playlists',backref='User')
 
 
@@ -28,9 +27,14 @@ class Role(db.Model, RoleMixin):
     name = db.Column(db.String(60), unique=True)
     description = db.Column(db.String(255))
 
+class User_track(db.Model):
+    __tablename__ = 'User_track'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('User.user_id'))
+    last_login = db.Column(db.DateTime)
+
 class Albums(db.Model):
     __tablename__ = 'Albums'
-    #__searchable__ = ['album_name','creator_name','genre']
     album_id = db.Column(db.Integer, primary_key=True)
     album_name = db.Column(db.String(50) ,nullable=False)
     album_art = db.Column(db.String(200), nullable=False)
@@ -52,7 +56,6 @@ class Playlists(db.Model):
 
 class Songs(db.Model):
     __tablename__ = 'Songs'
-    #__searchable__ = ['song_name','ratings','genre']
     song_id = db.Column(db.Integer, primary_key=True)
     album_id= db.Column(db.Integer, db.ForeignKey('Albums.album_id'))
     song_name = db.Column(db.String(30) ,nullable=False)
@@ -63,5 +66,5 @@ class Songs(db.Model):
     creator = db.Column(db.Integer,db.ForeignKey('User.user_id'))
     genre=db.Column(db.String(30),nullable=False)
     song_loc = db.Column(db.String(100), nullable=False ,unique=True)
-    status = db.Column(db.String(30), default="not_flagged", nullable=False)
+    flagged = db.Column(db.Boolean, default=False, nullable=False)
     plals=db.relationship('Playlists',secondary=mtmr,backref='song_inpl',cascade='save-update, merge, refresh-expire')
