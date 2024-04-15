@@ -111,7 +111,7 @@ def rate(rate,song):
     cache.clear()
     return jsonify({"rating":curr_song.ratings}),200
 
-@cache.cached(timeout=300)
+@cache.cached(timeout=100)
 @app.get('/profile/<username>')
 def profile(username):
     user = datastore.find_user(username = username)
@@ -178,6 +178,7 @@ def playlist_curr(username,pid):
             "genre": song.genre,
             "album": Albums.query.filter_by(album_id = song.album_id).first().album_name,
             "ratings": song.ratings,
+            "lyrics": song.lyrics,
             "creator": datastore.find_user(user_id = song.creator).name,
             })
     pl["songs"] = songlist

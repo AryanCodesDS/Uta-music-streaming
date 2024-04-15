@@ -32,9 +32,21 @@ def daily_reminder(to, subject):
     users = User.query.filter(User.roles.any(Role.name == 'General')).all()
     for user in users:
         user_last_login = User_track.query.filter_by(user_id = user.user_id).first().last_login
-        if user_last_login != current_date and user_last_login != None:
+        if user_last_login.date() != current_date and user_last_login != None:
             with open(file_path, 'r') as f:
                 template = Template(f.read())
                 send_message(user.email, subject,template.render(username =user.name))
                 return "Reminder Sent"
         return "Not Sent" 
+
+        
+'''
+@shared_task(ignore_result=False)
+def daily_reminder(to, subject):
+    users = User.query.filter(User.roles.any(Role.name == 'General')).all()
+    for user in users:
+        with open(file_path, 'r') as f:
+            template = Template(f.read())
+            send_message(user.email, subject,template.render(username =user.name))
+    return "Reminder Sent"
+'''

@@ -127,8 +127,8 @@ albumparser.add_argument('albumyear', type=str, required=False)
 albumparser.add_argument('username', type=str, required=True,help="Creator id must be string and is required")
 
 class albumAPI(Resource):
+
     @auth_required('token')
-    @cache.cached(timeout=300,key_prefix='albums')
     def get(self):
         opt = request.args.get('alt', default = True, type = bool)
         uid = request.args.get('username', default = None, type = str)
@@ -168,6 +168,7 @@ class albumAPI(Resource):
                 data['genre'] = album.genre
                 data['artist'] = User.query.filter_by(user_id = album.creator).first().name
                 albums.append(data)
+        cache.set(f'dashboard_{uid}',albums, timeout=60)
         return jsonify(albums)
     
     @roles_accepted("Creator","Admin")

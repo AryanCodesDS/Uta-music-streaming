@@ -1,0 +1,176 @@
+// Interactive Data Models
+digraph {
+	graph [bgcolor="#EEEEEE" rankdir=TB splines=spline]
+	node [fontname=Roboto fontsize=12 shape=none]
+	edge [fontname=Roboto fontsize=10]
+	User [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">User</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">user_id</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">name</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(30) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">email</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(30) (Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">username</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(30) (Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">password</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">fs_uniquifier</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) (Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">active</TD>
+                         <TD BGCOLOR="#BBDEFB">BOOLEAN ()</TD>
+                         </TR></TABLE>> URL="http://User_details.html"]
+	User -> Role [label=roles color="#1E88E5" style=dashed tooltip="Relation between User and Role"]
+	User -> Playlists [label=playlists color="#1E88E5" style=dashed tooltip="Relation between User and Playlists"]
+	Songs [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">Songs</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">song_id</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">album_id</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">song_name</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(30) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">song_year</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">ratings</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">user_rate_count</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">lyrics</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(5000) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">creator</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">genre</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(30) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">song_loc</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(100) (Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">flagged</TD>
+                         <TD BGCOLOR="#BBDEFB">BOOLEAN ()</TD>
+                         </TR></TABLE>> URL="http://Songs_details.html"]
+	Songs -> Playlists [label=plals color="#1E88E5" style=dashed tooltip="Relation between Songs and Playlists"]
+	Songs -> Albums [label=Albums color="#1E88E5" style=dashed tooltip="Relation between Songs and Albums"]
+	Albums [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">Albums</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">album_id</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">album_name</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(50) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">album_art</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(200) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">album_year</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">creator</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">genre</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(30) ()</TD>
+                         </TR></TABLE>> URL="http://Albums_details.html"]
+	Albums -> Songs [label=songs color="#1E88E5" style=dashed tooltip="Relation between Albums and Songs"]
+	Roles_Users [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">Roles_Users</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">user_id</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">role_id</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR></TABLE>> URL="http://Roles_Users_details.html"]
+	User_track [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">User_track</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">user_id</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">last_login</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR></TABLE>> URL="http://User_track_details.html"]
+	Albums [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">Albums</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">album_id</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">album_name</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(50) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">album_art</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(200) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">album_year</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">creator</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">genre</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(30) ()</TD>
+                         </TR></TABLE>> URL="http://Albums_details.html"]
+	Albums -> Songs [label=songs color="#1E88E5" style=dashed tooltip="Relation between Albums and Songs"]
+	Playlists [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">Playlists</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">pl_id</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">pl_name</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(50) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">pl_year</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">uid</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR></TABLE>> URL="http://Playlists_details.html"]
+	Playlists -> User [label=User color="#1E88E5" style=dashed tooltip="Relation between Playlists and User"]
+	Playlists -> Songs [label=song_inpl color="#1E88E5" style=dashed tooltip="Relation between Playlists and Songs"]
+	Role [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">Role</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">name</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(60) (Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">description</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR></TABLE>> URL="http://Role_details.html"]
+	Role -> User [label=Users color="#1E88E5" style=dashed tooltip="Relation between Role and User"]
+}
