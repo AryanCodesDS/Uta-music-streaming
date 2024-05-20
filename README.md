@@ -1,7 +1,3 @@
-Here’s the updated README file with additional sections for installation, usage, contributing, and license:
-
----
-
 # UTA - A MUSIC STREAMING APP
 
 UTA🎵 is a multi-user desktop web application designed for music streaming and reading lyrics. It offers functionalities for both general users and creators, providing a comprehensive platform for music enthusiasts.
@@ -116,5 +112,3 @@ We welcome contributions from the community! Here’s how you can help:
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
-
----
